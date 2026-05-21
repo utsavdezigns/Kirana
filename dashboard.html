@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — KiranaCloud</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">🛒 KiranaCloud</div>
+    <div class="store-selector">
+      <div class="store-badge">🏪</div>
+      <div class="store-info">
+        <div class="store-name" id="store-name-display">My Store</div>
+        <div class="store-loc" id="store-location-display">Nepal</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showTab('dashboard-tab')"><span class="nav-icon">📊</span>Dashboard</a>
+      <a class="nav-item" onclick="showTab('inventory-tab')"><span class="nav-icon">📦</span>Inventory</a>
+      <a class="nav-item" onclick="showTab('finance-tab')"><span class="nav-icon">💰</span>Finance</a>
+      <a class="nav-item" onclick="showTab('stats-tab')"><span class="nav-icon">📈</span>Stats & Reports</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" onclick="logout()"><span class="nav-icon">🚪</span>Logout</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <div id="page-title" class="page-title">Dashboard</div>
+        <div class="date-badge" id="current-date"></div>
+      </div>
+      <div class="top-bar-right">
+        <button class="btn-icon" onclick="showEndOfDayModal()">🌙 दिनको Report</button>
+        <div class="user-avatar" title="Logout गर्नुस्" onclick="logout()" style="cursor: pointer;">
+          <span id="user-initial">R</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard-tab" class="tab-content active">
+      <div class="kpi-grid">
+        <div class="kpi-card green">
+          <div class="kpi-label">आजको बिक्री</div>
+          <div class="kpi-value" id="kpi-sales">₹45,230</div>
+          <div class="kpi-change" id="kpi-sales-change">+12% हिजोभन्दा</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-label">आजको खर्च</div>
+          <div class="kpi-value" id="kpi-expense">₹12,500</div>
+          <div class="kpi-change">आजसम्म</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-label">नाफा (आज)</div>
+          <div class="kpi-value" id="kpi-profit">₹32,730</div>
+          <div class="kpi-change" id="kpi-profit-pct">72% Margin</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label">कम Stock</div>
+          <div class="kpi-value" id="kpi-lowstock">5</div>
+          <div class="kpi-change">items attention चाहिन्छ</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>हालसालैका Transactions</h3>
+            <button class="btn-sm" onclick="showTab('finance-tab')">सबै हेर्नुस् →</button>
+          </div>
+          <div id="recent-transactions">
+            <div class="fin-item">
+              <div>📦 चामल (10 kg)</div>
+              <div>₹1,500</div>
+            </div>
+            <div class="fin-item">
+              <div>☕ कफी (बल्क)</div>
+              <div>₹2,200</div>
+            </div>
+            <div class="fin-item">
+              <div>🧴 तेल (5L)</div>
+              <div>₹850</div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <h3>⚠️ Low Stock Alert</h3>
+            <button class="btn-sm" onclick="showTab('inventory-tab')">Manage →</button>
+          </div>
+          <div id="low-stock-list">
+            <div class="fin-item">
+              <div>🧂 नुन - 2 units</div>
+              <div style="color: var(--danger);">Low</div>
+            </div>
+            <div class="fin-item">
+              <div>🧈 मक्खन - 1 unit</div>
+              <div style="color: var(--danger);">Critical</div>
+            </div>
+            <div class="fin-item">
+              <div>🍵 चिया - 3 units</div>
+              <div style="color: var(--warning);">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card full-width">
+        <div class="dash-card-header">
+          <h3>📈 ७ दिनको बिक्री</h3>
+        </div>
+        <div class="chart-container" style="min-height: 300px; display: flex; align-items: center; justify-content: center; background: var(--bg3); border-radius: var(--radius-sm); color: var(--text-dim);">
+          <p>📊 Chart Integration Ready</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVENTORY TAB -->
+    <div id="inventory-tab" class="tab-content">
+      <div class="inv-toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Product खोज्नुस्..." id="inv-search" oninput="filterInventory()"/>
+        </div>
+        <div class="inv-filters">
+          <select id="cat-filter" onchange="filterInventory()">
+            <option value="">सबै Categories</option>
+            <option value="खाद्य सामग्री">खाद्य सामग्री</option>
+            <option value="पेय पदार्थ">पेय पदार्थ</option>
+            <option value="सफाई सामग्री">सफाई सामग्री</option>
+            <option value="व्यक्तिगत हेरचाह">व्यक्तिगत हेरचाह</option>
+            <option value="अन्य">अन्य</option>
+          </select>
+          <select id="stock-filter" onchange="filterInventory()">
+            <option value="">सबै Stock</option>
+            <option value="low">कम Stock</option>
+            <option value="ok">ठीक Stock</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="openAddProductModal()">+ Product थप्नुस्</button>
+      </div>
+
+      <div class="inv-summary-bar">
+        <div class="inv-sum-item"><span id="inv-total-count">24</span> <small>कुल Items</small></div>
+        <div class="inv-sum-item accent"><span id="inv-low-count">5</span> <small>Low Stock</small></div>
+        <div class="inv-sum-item"><span id="inv-value">₹2,45,670</span> <small>कुल मूल्य</small></div>
+      </div>
+
+      <div class="inv-table-wrap">
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Quantity</th>
+              <th>खरिद मूल्य</th>
+              <th>बिक्री मूल्य</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inv-tbody">
+            <tr>
+              <td>चामल (Premium)</td>
+              <td>खाद्य सामग्री</td>
+              <td>45 kg</td>
+              <td>₹80</td>
+              <td>₹100</td>
+              <td><span style="color: var(--success);">✓ OK</span></td>
+              <td><button class="btn-sm">Edit</button></td>
+            </tr>
+            <tr>
+              <td>कफी पाउडर</td>
+              <td>पेय पदार्थ</td>
+              <td>12 units</td>
+              <td>₹180</td>
+              <td>₹250</td>
+              <td><span style="color: var(--danger);">⚠ Low</span></td>
+              <td><button class="btn-sm">Edit</button></td>
+            </tr>
+            <tr>
+              <td>नमक (पैकेट)</td>
+              <td>खाद्य सामग्री</td>
+              <td>2 units</td>
+              <td>₹40</td>
+              <td>₹60</td>
+              <td><span style="color: var(--danger);">⚠ Low</span></td>
+              <td><button class="btn-sm">Edit</button></td>
+            </tr>
+            <tr>
+              <td>तेल (5L)</td>
+              <td>खाद्य सामग्री</td>
+              <td>8 bottles</td>
+              <td>₹420</td>
+              <td>₹550</td>
+              <td><span style="color: var(--success);">✓ OK</span></td>
+              <td><button class="btn-sm">Edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FINANCE TAB -->
+    <div id="finance-tab" class="tab-content">
+      <div class="fin-toolbar">
+        <div class="fin-tabs">
+          <button class="fin-tab active" onclick="switchFinTab('income')">💚 आम्दानी</button>
+          <button class="fin-tab" onclick="switchFinTab('expense')">❤️ खर्च</button>
+        </div>
+        <button class="btn-primary" onclick="openAddTransactionModal()">+ Transaction थप्नुस्</button>
+      </div>
+
+      <div class="fin-summary">
+        <div class="fin-sum-card green">
+          <div class="fin-sum-label">कुल आम्दानी</div>
+          <div class="fin-sum-value" id="total-income">₹45,230</div>
+        </div>
+        <div class="fin-sum-card red">
+          <div class="fin-sum-label">कुल खर्च</div>
+          <div class="fin-sum-value" id="total-expense">₹12,500</div>
+        </div>
+        <div class="fin-sum-card blue">
+          <div class="fin-sum-label">शुद्ध नाफा</div>
+          <div class="fin-sum-value" id="net-profit">₹32,730</div>
+        </div>
+      </div>
+
+      <div class="fin-list" id="income-list">
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">सामान बिक्री</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 2:30 PM</div>
+          </div>
+          <div style="color: var(--success); font-weight: 600;">+₹15,450</div>
+        </div>
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">क्रेडिट Payment</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 1:15 PM</div>
+          </div>
+          <div style="color: var(--success); font-weight: 600;">+₹8,900</div>
+        </div>
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">अन्य आम्दानी</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 10:45 AM</div>
+          </div>
+          <div style="color: var(--success); font-weight: 600;">+₹20,880</div>
+        </div>
+      </div>
+
+      <div class="fin-list hidden" id="expense-list">
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">सामान खरिद</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 3:00 PM</div>
+          </div>
+          <div style="color: var(--danger); font-weight: 600;">-₹9,500</div>
+        </div>
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">दैनिक खर्च</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 2:00 PM</div>
+          </div>
+          <div style="color: var(--danger); font-weight: 600;">-₹2,000</div>
+        </div>
+        <div class="fin-item">
+          <div>
+            <div style="font-weight: 600;">Utility Bills</div>
+            <div style="font-size: 0.9rem; color: var(--text-dim);">आज, 1:00 PM</div>
+          </div>
+          <div style="color: var(--danger); font-weight: 600;">-₹1,000</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div id="stats-tab" class="tab-content">
+      <div class="stats-header">
+        <h2>📊 पूर्ण Report</h2>
+        <p>दिनको अन्त्यमा पूरा analysis</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-big-card">
+          <h3>🏆 Top Selling Products</h3>
+          <div id="top-products">
+            <div class="fin-item">
+              <div>1. चामल (Premium)</div>
+              <div>₹24,500</div>
+            </div>
+            <div class="fin-item">
+              <div>2. तेल (Cooking)</div>
+              <div>₹12,300</div>
+            </div>
+            <div class="fin-item">
+              <div>3. कफी पाउडर</div>
+              <div>₹8,430</div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-big-card">
+          <h3>📦 Inventory Summary</h3>
+          <div id="inv-summary-stats">
+            <div class="fin-item">
+              <div>कुल Items</div>
+              <div>24 products</div>
+            </div>
+            <div class="fin-item">
+              <div>कुल मूल्य</div>
+              <div>₹2,45,670</div>
+            </div>
+            <div class="fin-item">
+              <div>Low Stock</div>
+              <div style="color: var(--danger);">5 items</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-big-card full-width">
+        <h3>💰 Financial Overview</h3>
+        <div class="fin-overview-grid" id="fin-overview">
+          <div class="fin-item">
+            <div>Total Revenue</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">₹45,230</div>
+          </div>
+          <div class="fin-item">
+            <div>Total Expenses</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);">₹12,500</div>
+          </div>
+          <div class="fin-item">
+            <div>Net Profit</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">₹32,730</div>
+          </div>
+          <div class="fin-item">
+            <div>Profit Margin</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">72.3%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-big-card full-width">
+        <h3>📅 Category-wise Sales</h3>
+        <div id="cat-stats">
+          <div class="fin-item">
+            <div>खाद्य सामग्री</div>
+            <div style="font-weight: 600;">₹28,500 (63%)</div>
+          </div>
+          <div class="fin-item">
+            <div>पेय पदार्थ</div>
+            <div style="font-weight: 600;">₹12,300 (27%)</div>
+          </div>
+          <div class="fin-item">
+            <div>अन्य</div>
+            <div style="font-weight: 600;">₹4,430 (10%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- END OF DAY MODAL -->
+  <div id="eod-overlay" class="modal-overlay hidden" onclick="closeEOD()">
+    <div class="modal eod-modal" onclick="event.stopPropagation()">
+      <div class="eod-header">
+        <div class="eod-moon" style="font-size: 2.5rem; margin-bottom: 16px;">🌙</div>
+        <h2>दिनको अन्त्यको Report</h2>
+        <div id="eod-date" style="color: var(--text-dim); font-size: 0.95rem;">आज</div>
+        <button class="modal-close" onclick="closeEOD()">✕</button>
+      </div>
+      <div id="eod-body" class="eod-body" style="padding: 24px;">
+        <div class="fin-item">
+          <div style="font-weight: 600;">कुल बिक्री</div>
+          <div style="font-weight: 700;">₹45,230</div>
+        </div>
+        <div class="fin-item">
+          <div style="font-weight: 600;">कुल खर्च</div>
+          <div style="font-weight: 700;">₹12,500</div>
+        </div>
+        <div class="fin-item">
+          <div style="font-weight: 600;">नाफा</div>
+          <div style="font-weight: 700; color: var(--success);">₹32,730</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check authentication
+    document.addEventListener('DOMContentLoaded', function() {
+      const userEmail = localStorage.getItem('kc_userEmail');
+      if (!userEmail) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Load user name
+      try {
+        const userNameStr = localStorage.getItem('kc_userName');
+        let userName = 'User';
+        
+        if (userNameStr) {
+          userName = JSON.parse(userNameStr);
+        }
+        
+        // Get first letter for avatar
+        const firstLetter = userName.charAt(0).toUpperCase() || 'U';
+        document.getElementById('user-initial').textContent = firstLetter;
+      } catch (e) {
+        console.log('User name not found');
+      }
+
+      // Load and display store info
+      try {
+        const storeInfoStr = localStorage.getItem('kc_storeInfo');
+        if (storeInfoStr) {
+          const storeInfo = JSON.parse(storeInfoStr);
+          document.getElementById('store-name-display').textContent = storeInfo.name || 'My Store';
+          document.getElementById('store-location-display').textContent = storeInfo.location || 'Nepal';
+        }
+      } catch (e) {
+        console.log('Store info not found');
+      }
+
+      // Set current date
+      document.getElementById('current-date').textContent = new Date().toLocaleDateString('ne-NP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    });
+
+    // Tab switching
+    function showTab(tabId) {
+      const tabs = document.querySelectorAll('.tab-content');
+      const navItems = document.querySelectorAll('.nav-item');
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      navItems.forEach(item => item.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.target.closest('.nav-item').classList.add('active');
+      
+      // Update page title
+      const titles = {
+        'dashboard-tab': 'Dashboard',
+        'inventory-tab': 'Inventory',
+        'finance-tab': 'Finance',
+        'stats-tab': 'Stats & Reports'
+      };
+      document.getElementById('page-title').textContent = titles[tabId];
+    }
+
+    // Finance tab switching
+    function switchFinTab(tab) {
+      const incomeList = document.getElementById('income-list');
+      const expenseList = document.getElementById('expense-list');
+      const finTabs = document.querySelectorAll('.fin-tab');
+      
+      finTabs.forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      if (tab === 'income') {
+        incomeList.classList.remove('hidden');
+        expenseList.classList.add('hidden');
+      } else {
+        incomeList.classList.add('hidden');
+        expenseList.classList.remove('hidden');
+      }
+    }
+
+    // Modal functions
+    function showEndOfDayModal() {
+      document.getElementById('eod-overlay').classList.remove('hidden');
+    }
+
+    function closeEOD() {
+      document.getElementById('eod-overlay').classList.add('hidden');
+    }
+
+    function openAddProductModal() {
+      alert('Product Add Modal will be implemented');
+    }
+
+    function openAddTransactionModal() {
+      alert('Transaction Add Modal will be implemented');
+    }
+
+    function filterInventory() {
+      console.log('Filtering inventory...');
+    }
+
+    // Logout function
+    function logout() {
+      if (confirm('लॉगआउट गर्नु निश्चित हुनुहुन्छ?')) {
+        // Clear all user data
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if (key.startsWith('kc_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        showNotification('✓ लॉगआउट भयो', 'success');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 500);
+      }
+    }
+
+    // Notification function
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 20px;
+        background: ${type === 'success' ? '#2dd4a0' : type === 'error' ? '#e8435a' : '#4c8ef7'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeEOD();
+      }
+    });
+  </script>
+</body>
+</html>

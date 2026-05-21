@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — KiranaCloud</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-left">
+      <div class="login-brand">🛒 KiranaCloud</div>
+      <h2>स्वागत छ!</h2>
+      <p>तपाईंको पसल manage गर्न तयार हुनुस्।</p>
+      <div class="login-testimonial">
+        <p>"KiranaCloud ले मेरो पसलको हिसाब एकदम सजिलो बनायो।"</p>
+        <span>— रमेश, सुनसरी</span>
+      </div>
+    </div>
+    <div class="login-right">
+      <!-- Login Form -->
+      <div id="login-form" class="login-form-container">
+        <h3>Login</h3>
+        <div class="form-group">
+          <label>Email वा Phone</label>
+          <input type="email" placeholder="example@email.com" id="login-email"/>
+          <span class="error-msg" id="email-error"></span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" id="login-pass"/>
+          <span class="error-msg" id="pass-error"></span>
+        </div>
+        <button class="btn-primary full" onclick="verifyEmailAndLogin()">अगाडि बढ्नुस् →</button>
+        
+        <div class="login-divider">वा</div>
+        
+        <!-- Google Sign-In Button -->
+        <button class="btn-google" id="google-signin-btn" onclick="handleGoogleSignIn()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Google सँग साइन गर्नुस्
+        </button>
+
+        <p class="login-footer">Account छैन? <a href="#" onclick="showSignup()">नयाँ Account बनाउनुस्</a></p>
+      </div>
+
+      <!-- Email Verification Form -->
+      <div id="verify-form" class="login-form-container hidden">
+        <h3>Email Verification</h3>
+        <p style="color: var(--text-dim); margin-bottom: 20px;">
+          हामीले <span id="verify-email-display"></span> मा verification code पठाएको छ।
+        </p>
+        <div style="background: var(--bg3); padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 3px solid var(--primary);">
+          <small style="color: var(--text-lighter);">
+            📌 Demo: Browser console मा code हेर्नुस् (F12)
+          </small>
+        </div>
+        <div class="form-group">
+          <label>Verification Code (6 digits)</label>
+          <input type="text" placeholder="000000" id="verify-code" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/>
+          <span class="error-msg" id="code-error"></span>
+        </div>
+        <button class="btn-primary full" onclick="submitVerificationCode()">Verify गर्नुस्</button>
+        <p class="login-footer" style="margin-top: 16px;">
+          Code पाएको छैन? <a href="#" onclick="resendCode()">दुबारा पठाउनुस्</a>
+        </p>
+        <button class="btn-ghost full" onclick="backToLogin()">Back</button>
+      </div>
+
+      <!-- Password Form -->
+      <div id="password-form" class="login-form-container hidden">
+        <h3>Password Enter गर्नुस्</h3>
+        <p style="color: var(--text-dim); margin-bottom: 20px; word-break: break-all;">
+          <strong id="confirm-email-display"></strong>
+        </p>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="••••••••" id="password-input"/>
+          <span class="error-msg" id="password-error"></span>
+        </div>
+        <button class="btn-primary full" onclick="submitPassword()">Login गर्नुस्</button>
+        <button class="btn-ghost full" onclick="backToVerify()">Back</button>
+      </div>
+
+      <!-- Store Setup Form -->
+      <div id="store-setup-form" class="login-form-container hidden">
+        <h3>पसलको नाम (वैकल्पिक)</h3>
+        <p style="color: var(--text-dim); margin-bottom: 20px;">
+          नमस्ते! <strong id="setup-user-name">User</strong>, तपाईंको पसलको नाम दिनुहोस् वा skip गर्नुस्।
+        </p>
+        <div class="form-group">
+          <label>पसलको नाम</label>
+          <input type="text" placeholder="जस्तैः रमेश किराना पसल" id="store-name"/>
+        </div>
+        <div class="form-group">
+          <label>Location (स्थान)</label>
+          <input type="text" placeholder="जस्तैः काठमाडौं, बागमती" id="store-location"/>
+        </div>
+        <button class="btn-primary full" onclick="completeSetup()">Dashboard खोल्नुस्</button>
+        <button class="btn-ghost full" onclick="skipStoreSetup()">Skip गर्नुस्</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Container -->
+  <div id="notification-container"></div>
+
+  <script src="js/app.js"></script>
+    <script>
+    // Google OAuth Client ID — Replace with your actual Client ID from Google Cloud Console
+    const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+
+    // Email validation
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Step 1: Verify Email and send code
+    function verifyEmailAndLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const emailError = document.getElementById('email-error');
+      
+      emailError.textContent = '';
+      
+      if (!email) {
+        emailError.textContent = '✗ Email दिनुहोस्';
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        emailError.textContent = '✗ Valid email दिनुहोस् (example@email.com)';
+        return;
+      }
+
+      // Store email for verification
+      storage.set('loginEmail', email);
+      document.getElementById('verify-email-display').textContent = email;
+      
+      // Simulate sending verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      storage.set('verificationCode', code);
+      
+      // In production, this would be sent via email/SMS
+      console.log('Verification code (demo):', code);
+      showNotification('✓ Verification code भेजिएको छ', 'success');
+      
+      // Show verification form
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('verify-form').classList.remove('hidden');
+    }
+
+    // Step 2: Submit verification code
+    function submitVerificationCode() {
+      const code = document.getElementById('verify-code').value;
+      const codeError = document.getElementById('code-error');
+      const correctCode = storage.get('verificationCode');
+      
+      codeError.textContent = '';
+      
+      if (!code) {
+        codeError.textContent = '✗ Code दिनुहोस्';
+        return;
+      }
+
+      if (code.length !== 6) {
+        codeError.textContent = '✗ 6 digit code दिनुहोस्';
+        return;
+      }
+
+      if (code !== correctCode) {
+        codeError.textContent = '✗ Invalid code';
+        return;
+      }
+
+      // Code verified, show password form
+      const email = storage.get('loginEmail');
+      document.getElementById('confirm-email-display').textContent = email;
+      
+      document.getElementById('verify-form').classList.add('hidden');
+      document.getElementById('password-form').classList.remove('hidden');
+      
+      showNotification('✓ Email verified', 'success');
+    }
+
+    // Step 3: Submit password
+    function submitPassword() {
+      const password = document.getElementById('password-input').value;
+      const passwordError = document.getElementById('password-error');
+      
+      passwordError.textContent = '';
+      
+      if (!password) {
+        passwordError.textContent = '✗ Password दिनुहोस्';
+        return;
+      }
+
+      if (password.length < 6) {
+        passwordError.textContent = '✗ Minimum 6 characters';
+        return;
+      }
+
+      // Password verified
+      const email = storage.get('loginEmail');
+      storage.set('userEmail', email);
+      storage.set('userPassword', password); // In production, never store plaintext
+      
+      // Extract name from email if not already set
+      if (!storage.get('userName')) {
+        const name = email.split('@')[0];
+        storage.set('userName', name);
+      }
+      
+      // Check if user has store info
+      const storeInfo = storage.get('storeInfo');
+      
+      if (!storeInfo) {
+        // Show store setup form
+        const userName = storage.get('userName');
+        document.getElementById('setup-user-name').textContent = userName;
+        document.getElementById('password-form').classList.add('hidden');
+        document.getElementById('store-setup-form').classList.remove('hidden');
+      } else {
+        // Go to dashboard
+        window.location.href = 'dashboard.html';
+      }
+      
+      showNotification('✓ Login successful', 'success');
+    }
+
+    // Step 4: Complete store setup
+    function completeSetup() {
+      const storeName = document.getElementById('store-name').value.trim() || 'My Store';
+      const storeLocation = document.getElementById('store-location').value.trim() || 'Nepal';
+      
+      storage.set('storeInfo', {
+        name: storeName,
+        location: storeLocation
+      });
+      
+      showNotification('✓ पसल सेटअप पूरो भयो', 'success');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 500);
+    }
+
+    // Skip store setup
+    function skipStoreSetup() {
+      storage.set('storeInfo', {
+        name: 'My Store',
+        location: 'Nepal'
+      });
+      window.location.href = 'dashboard.html';
+    }
+
+    function showSignup() {
+      showNotification('Sign up functionality coming soon', 'info');
+    }
+
+    // Decode JWT token
+    function decodeJWT(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        console.error('JWT decode error:', e);
+        return null;
+      }
+    }
+
+    // Google Sign-In with OAuth 2.0
+    function handleGoogleSignIn() {
+      showNotification('⏳ Google साथ साइन गर्दै...', 'info');
+
+      const isRealClientConfigured = GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'YOUR_GOOGLE_CLIENT_ID';
+      
+      if (typeof google !== 'undefined' && google.accounts && isRealClientConfigured) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          cancel_on_tap_outside: false,
+          auto_select: false
+        });
+        google.accounts.id.prompt(function(opt_out_hint) {
+          if (opt_out_hint) {
+            showNotification('✗ Google Sign-In dismissed', 'error');
+          }
+        });
+      } else {
+        // Demo fallback — no real Client ID configured
+        const accounts = [
+          { email: 'ramesh@gmail.com', name: 'Ramesh Poudel', picture: '🧔' },
+          { email: 'anita@gmail.com', name: 'Anita Sharma', picture: '👩' },
+          { email: 'demo@gmail.com', name: 'Demo User', picture: '👤' }
+        ];
+        const selectedAccount = accounts[0];
+        authenticateWithGoogle(selectedAccount);
+      }
+    }
+
+    // Authenticate with Google account
+    function authenticateWithGoogle(account) {
+      const email = account.email;
+      const name = account.name;
+
+      // Store Google auth info
+      storage.set('userEmail', email);
+      storage.set('userName', name);
+      storage.set('loginMethod', 'google');
+      storage.set('isGoogleSignIn', true);
+
+      showNotification(`✓ ${name} को साथ साइन गरियो`, 'success');
+
+      // Check if user has store info
+      const storeInfo = storage.get('storeInfo');
+
+      if (!storeInfo) {
+        // Show store setup form
+        setTimeout(() => {
+          // Update the user name in store setup form
+          document.getElementById('setup-user-name').textContent = name;
+          document.getElementById('login-form').classList.add('hidden');
+          document.getElementById('store-setup-form').classList.remove('hidden');
+        }, 500);
+      } else {
+        // Go to dashboard
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 500);
+      }
+    }
+
+    // Real Google OAuth callback (if using actual OAuth)
+    function handleCredentialResponse(response) {
+      console.log('Google Credential:', response.credential);
+      
+      const payload = decodeJWT(response.credential);
+      
+      if (payload && payload.email) {
+        const account = {
+          email: payload.email,
+          name: payload.name || 'User',
+          picture: payload.picture || '👤'
+        };
+        
+        authenticateWithGoogle(account);
+      } else {
+        showNotification('✗ Google authentication failed', 'error');
+      }
+    }
+
+    // Notifications
+    function showNotification(message, type = 'info') {
+      const container = document.getElementById('notification-container');
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 16px 20px;
+        background: ${type === 'success' ? '#2dd4a0' : type === 'error' ? '#e8435a' : '#4c8ef7'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+        word-break: break-word;
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Add animation styles
+    if (!document.querySelector('style[data-notification]')) {
+      const style = document.createElement('style');
+      style.setAttribute('data-notification', 'true');
+      style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  </script>
+</body>
+</html>
