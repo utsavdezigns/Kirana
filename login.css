@@ -1,0 +1,275 @@
+/* ===========================
+   Login Page Styles
+   =========================== */
+
+.login-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg3) 100%);
+}
+
+.login-left {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 50%, var(--bg) 100%);
+}
+
+.login-brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.login-left h2 {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.login-left p {
+  font-size: 1.2rem;
+  color: var(--text-lighter);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.login-testimonial {
+  padding: 24px;
+  background: rgba(245, 166, 35, 0.05);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+}
+
+.login-testimonial p {
+  font-style: italic;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.login-testimonial span {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.login-right {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-right h3 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-lighter);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.1);
+}
+
+.form-group input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Error messages */
+.error-msg {
+  display: block;
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  min-height: 20px;
+}
+
+/* Hidden forms */
+.hidden {
+  display: none !important;
+}
+
+/* Form container transitions */
+.login-form-container {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Google Button */
+.btn-google {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #333;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btn-google:hover {
+  background: #f9f9f9;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-google svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-primary.full {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.login-divider {
+  text-align: center;
+  margin: 24px 0;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: var(--border);
+}
+
+.login-divider::before {
+  left: 0;
+}
+
+.login-divider::after {
+  right: 0;
+}
+
+.btn-ghost.full {
+  width: 100%;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.login-footer a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ===========================
+   Responsive
+   =========================== */
+
+@media (max-width: 1024px) {
+  .login-container {
+    grid-template-columns: 1fr;
+  }
+
+  .login-left {
+    padding: 40px;
+  }
+
+  .login-right {
+    padding: 40px;
+  }
+
+  .login-left h2 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-left {
+    padding: 30px;
+  }
+
+  .login-right {
+    padding: 30px;
+  }
+
+  .login-left h2 {
+    font-size: 2rem;
+  }
+
+  .login-right h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    grid-template-columns: 1fr;
+  }
+
+  .login-left {
+    padding: 20px;
+    min-height: auto;
+    padding-bottom: 30px;
+  }
+
+  .login-right {
+    padding: 20px;
+  }
+
+  .login-brand,
+  .login-left h2,
+  .login-right h3 {
+    font-size: 1.3rem;
+  }
+
+  .login-left p {
+    font-size: 1rem;
+  }
+
+  .login-testimonial {
+    padding: 16px;
+  }
+}
